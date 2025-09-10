@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Telnet Printer — Interfaccia Web</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Telnet Printer — Interfaccia Web</h1>
+    <p class="lead">Inserisci IP/porta e invia testo o file alla stampante</p>
+
+    <div class="row">
+      <div style="flex:1">
+        <label>IP stampante</label>
+        <input id="host" type="text" placeholder="192.168.1.100" value="192.168.1.100">
+      </div>
+      <div style="width:120px">
+        <label>Porta</label>
+        <input id="port" type="number" value="9100">
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <label>Testo da stampare</label>
+      <textarea id="text">Hello from web interface\n</textarea>
+    </div>
+
+    <div class="row">
+      <div style="flex:1">
+        <label>Carica file (solo testo / binario semplice)</label>
+        <input id="file" type="file">
+      </div>
+      <div style="width:200px;align-self:end">
+        <div class="controls">
+          <button id="sendBtn">Invia alla stampante</button>
+          <button id="clearBtn" class="secondary">Pulisci log</button>
+        </div>
+      </div>
+    </div>
+  <div class="container">
+    <h1>Generatore di codici</h1>
+    
+    <label for="codeType">Tipo di codice:</label>
+    <select id="codeType">
+      <option value="qrcode">QR Code</option>
+      <option value="barcode">Barcode (Code128)</option>
+      <option value="datamatrix">DataMatrix</option>
+    </select>
+    
+    <label for="options">Opzioni:</label>
+        <select class = "nascosto" class="tutto" id="options">
+        </select>
+        <select class = "nascosto" class="tutto" id="options2"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options3"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options4"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options5"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options6"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options7"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options8"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options9"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options10"><!---->
+        </select>
+        <select class = "nascosto" class="tutto" id="options11"><!---->
+        </select>
+        <div class="nascosto" id="Opzioni">
+    <label for="codeText">Testo/URL:</label>
+    <input type="text" id="codeText" placeholder="Inserisci testo o URL">
+            </div>
+    <button id="generateBtn">Genera codice</button>
+    <button id="clearBtn">Pulisci</button>
+
+    <div id="log"></div>
+    <div id="output"></div>
+  </div>
+
+ 
+
+    
+     
+  </div>
+   <div style="margin-bottom:8px">
+      <div class="small">Log:</div>
+      <div id="log" class="log"></div>
+    </div>
+    <script>
+const logEl = document.getElementById('log');
+function appendLog(...parts){
+  const t = new Date().toLocaleTimeString();
+  logEl.innerText += `[${t}] ` + parts.join(' ') + '\n';
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+document.getElementById('clearBtn').addEventListener('click', ()=> logEl.innerText='');
+
+async function sendToBackend(payload){
+  try{
+    appendLog('Sending request to backend...');
+    const res = await fetch('/print', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json();
+    appendLog('Backend response:', JSON.stringify(j));
+  }catch(err){
+    appendLog('Error:', err.message || err);
+  }
+}
+
+document.getElementById('sendBtn').addEventListener('click', async ()=>{
+  const host = document.getElementById('host').value.trim();
+  const port = parseInt(document.getElementById('port').value,10)||9100;
+  const text = document.getElementById('text').value;
+  const fileInput = document.getElementById('file');
+
+  if(!host){ appendLog('Inserire IP stampante'); return; }
+
+  // se è stato selezionato un file, leggilo come array di byte
+  if(fileInput.files && fileInput.files.length>0){
+    const file = fileInput.files[0];
+    appendLog('File selezionato:', file.name, file.size+' bytes');
+    const arrBuf = await file.arrayBuffer();
+    // converti in base64 per invio JSON
+    const b64 = arrayBufferToBase64(arrBuf);
+    await sendToBackend({host, port, data_base64: b64, filename: file.name});
+  }else{
+
+    await sendToBackend({host, port, text: text});
+  }
+});
+
+function arrayBufferToBase64(buffer){
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for(let i=0;i<len;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+</script>
+</body>
+</html>
