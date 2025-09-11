@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Telnet Printer — Interfaccia Web</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Telnet Printer — Interfaccia Web</h1>
+    <p class="lead">Inserisci IP/porta e invia testo o file alla stampante</p>
+
+    <div class="row">
+      <div style="flex:1">
+        <label>IP stampante</label>
+        <input id="host" type="text" placeholder="192.168.1.100" value="192.168.1.100">
+      </div>
+      <div style="width:120px">
+        <label>Porta</label>
+        <input id="port" type="number" value="9100">
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <label>Testo da stampare</label>
+      <textarea id="text">Hello from web interface\n</textarea>
+    </div>
+
+    <div class="row">
+      <div style="flex:1">
+        <label>Carica file (solo testo / binario semplice)</label>
+        <input id="file" type="file">
+      </div>
+      <div style="width:200px;align-self:end">
+        <div class="controls">
+          <button id="sendBtn">Invia alla stampante</button>
+          <button id="clearLogBtn" class="secondary">Pulisci log</button>
+        </div>
+      </div>
+    </div>
+  <div class="container">
+    <h1>Generatore di codici</h1>
+    
+    <label for="codeType">Tipo di codice:</label>
+    <select id="codeType">
+      <option value="qrcode">QR Code</option>
+      <option value="barcode">Barcode (Code128)</option>
+      <option value="datamatrix">DataMatrix</option>
+    </select>
+   <div id="optionsContainer"> 
+    <label for="options">Opzioni:</label>
+  <div class="nascosto" id="Opzioni">
+    <label for="codeText">Testo/URL:</label>
+    <input type="text" id="optionsText" placeholder="Inserisci testo o URL">
+            </div>
+    <button id="generateBtn">Genera codice</button>
+    <button id="clearBtn">Pulisci</button>
+
+    <div id="log"></div>
+    <div id="output"></div>
+  </div>
+
+ 
+
+    
+     
+  </div>
+   <div style="margin-bottom:8px">
+      <div class="small">Log:</div>
+      <div id="logArea" class="log"></div>
+    </div>
+    <script src="script.js"> 
+</script>
+</body>
+</html>
