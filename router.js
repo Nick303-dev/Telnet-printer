@@ -34,31 +34,54 @@ app.get('/api/opzioni', (req, res) => {
 
 // --- Telnet Helper (Standalone per-request connection) ---
 
-async function sendCommand(cmd, ip, port) {
+function buildCmdString(codeType, options, text) {
+  // Esempio base: costruisce la stringa separando i parametri con virgola
+  // Opzioni devono essere un oggetto tipo { p1: 0, p2: 1, ... }
+  const cmdArray = [
+    codeType,
+    options.p1 || 0,
+    options.p2 || 0,
+    options.p3 || 0,
+    options.p4 || 0,
+    options.p5 || 0,
+    options.p6 || 0,
+    options.p7 || 0,
+    options.p8 || 0,
+    options.p9 || 0,
+    options.p10 || 0,
+    options.p11 || 0,
+    options.p12 || 0,
+    `‟${text}‟` // testo tra virgolette speciali
+  ];
+  return cmdArray.join(',');
+}
+
+// --- API per invio comando ---
+app.post('/api/send-command', async (req, res) => {
+  const { codeType, options, text, ip, port } = req.body;
+
+  if (!codeType || !options || !text || !ip || !port) {
+    return res.status(400).json({ result: 'Missing required fields.' });
+  }
+
+  const cmd = buildCmdString(codeType, options, text);
+
   const connection = new Telnet();
   const params = {
     host: ip.trim(),
     port: typeof port === 'string' ? parseInt(port.trim(), 10) : port,
-    shellPrompt: '/ # ', // Adjust if your device uses a different prompt
     timeout: 1500
   };
 
   try {
     await connection.connect(params);
     const result = await connection.send(cmd);
-    await connection.end(); // Always close connection
-    return result;
-  } catch (error) {
-    // Attempt graceful disconnect on error
-    try {
-      await connection.end();
-    } catch (e) {
-      console.warn("Error closing connection after failure:", e);
-    }
-    throw error; // Re-throw for route handler to catch
+    await connection.end();
+    res.json({ result });
+  } catch (err) {
+    try { await connection.end(); } catch (e) {}
+    res.status(500).json({ result: err.message || 'Telnet error' });
   }
-}
-
-// --- Start Server ---
+});
 
 app.listen(3000, () => console.log('✅ Server avviato su http://localhost:3000'));
