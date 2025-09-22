@@ -1,37 +1,72 @@
-const mysql = require('mysql2/promise');
+// Script per creare un utente di test con password hashata
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+const db = require('../db');
 
-async function createUser() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306
-  });
-
-  const email = 'admin@example.com';  // usa email invece di username
-  const plainPassword = 'admin123';   // password di test
-  const role = 'admin';
-
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
+async function createTestUser() {
   try {
-    const [result] = await connection.execute(
-      'INSERT INTO USERS (email, password, role) VALUES (?, ?, ?)',
-      [email, hashedPassword, role]
-    );
-    console.log('✅ Utente creato con ID:', result.insertId);
-  } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
-      console.log('⚠️ Utente già esistente!');
-    } else {
-      console.error('Errore creazione utente:', err.message);
-    }
-  } finally {
-    await connection.end();
+    // Dati dell'utente di test
+    const userData = {
+      email: 'admin@test.com',
+      password: 'password123', // Password in chiaro che verrà hashata
+      role: 'admin',
+      status: 'active'
+    };
+
+    // Hash della password
+    console.log('🔒 Generazione hash della password...');
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+    console.log('✅ Password hashata con successo');
+
+    // Query per inserire l'utente
+    const query = `
+      INSERT INTO users (email, password, role, status) 
+      VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+      password = VALUES(password),
+      role = VALUES(role),
+      status = VALUES(status)
+    `;
+
+    // Esegui la query
+    console.log('📝 Inserimento utente nel database...');
+    db.query(query, [userData.email, hashedPassword, userData.role, userData.status], (err, results) => {
+      if (err) {
+        console.error('❌ Errore durante l\'inserimento:', err);
+        return;
+      }
+
+      console.log('✅ Utente creato con successo!');
+      console.log('📧 Email:', userData.email);
+      console.log('🔑 Password:', userData.password);
+      console.log('👤 Ruolo:', userData.role);
+      console.log('📊 Status:', userData.status);
+      console.log('🆔 ID utente:', results.insertId || 'esistente (aggiornato)');
+      
+      // Verifica che l'utente sia stato inserito correttamente
+      db.query('SELECT id, email, role, status FROM users WHERE email = ?', [userData.email], (err, results) => {
+        if (err) {
+          console.error('❌ Errore durante la verifica:', err);
+          return;
+        }
+        
+        console.log('\n🔍 Verifica utente inserito:');
+        console.log(results[0]);
+        
+        console.log('\n🎯 Per testare il login usa:');
+        console.log('Email: admin@test.com');
+        console.log('Password: password123');
+        
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Errore:', error);
+    process.exit(1);
   }
 }
 
-createUser();
+// Esegui lo script
+console.log('🚀 Avvio creazione utente di test...');
+createTestUser();

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emergency Security Test</title>
+</head>
+<body>
+    <h1>🚨 Emergency Security Diagnostic</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message) {
+            console.log(message);
+            results.innerHTML += '<p>' + message + '</p>';
+        }
+        
+        async function runTests() {
+            log('🔍 Starting security tests...');
+            
+            // Test 1: Check if we can access dashboard directly
+            log('<br>1️⃣ Testing direct dashboard access WITHOUT authentication...');
+            try {
+                const response = await fetch('/printer/public/index.html');
+                log(`Dashboard access status: ${response.status}`);
+                if (response.status === 200) {
+                    log('❌ CRITICAL: Dashboard accessible without auth!');
+                } else if (response.status === 401) {
+                    log('✅ Good: Dashboard properly protected');
+                } else {
+                    log(`⚠️ Unexpected: ${response.status}`);
+                }
+            } catch (error) {
+                log('Error testing dashboard: ' + error.message);
+            }
+            
+            // Test 2: Check if login with wrong creds gives token
+            log('<br>2️⃣ Testing login with WRONG credentials...');
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'hacker@test.com',
+                        password: 'wrongpass'
+                    })
+                });
+                
+                const data = await response.json();
+                log(`Login response status: ${response.status}`);
+                log(`Login response: ${JSON.stringify(data, null, 2)}`);
+                
+                if (response.status === 200 && data.accessToken) {
+                    log('❌ CRITICAL: Wrong creds gave access token!');
+                } else if (response.status === 401) {
+                    log('✅ Good: Wrong credentials properly rejected');
+                } else if (response.status === 500) {
+                    log('⚠️ Server error (probably DB issue)');
+                } else {
+                    log(`⚠️ Unexpected: ${response.status}`);
+                }
+            } catch (error) {
+                log('Error testing login: ' + error.message);
+            }
+            
+            // Test 3: Check localStorage for old tokens
+            log('<br>3️⃣ Checking localStorage for old tokens...');
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                log('⚠️ Found existing token in localStorage: ' + token.substring(0, 50) + '...');
+                log('🧹 Clearing old tokens...');
+                localStorage.clear();
+                log('✅ LocalStorage cleared');
+            } else {
+                log('✅ No tokens in localStorage');
+            }
+            
+            log('<br>🏁 Tests completed. Check results above.');
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

@@ -12,19 +12,22 @@ const adminBtn = document.getElementById('adminPanelBtn');
 const userRole = localStorage.getItem('userRole');
 // ===== AGGIUNGERE ALL'INIZIO DI script.js =====
 
+// Global user variable
+let currentUser = null;
+
 // --- Verifica autenticazione all'avvio della pagina ---
 window.addEventListener('DOMContentLoaded', async function() {
   const accessToken = localStorage.getItem('accessToken');
   
   if (!accessToken) {
     console.log('❌ No access token found, redirecting to login');
-    alert('Devi effettuare il login per accedere a questa pagina');
-    window.location.href = '/login.html';
+    redirectToLogin('Devi effettuare il login per accedere a questa pagina');
     return;
   }
 
   // Verifica validità del token
   try {
+    console.log('🔍 Verifying token...');
     const response = await fetch('/api/verify-token', {
       method: 'GET',
       headers: {
@@ -33,30 +36,68 @@ window.addEventListener('DOMContentLoaded', async function() {
       }
     });
 
+    console.log('Token verification response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error('Token verification failed');
+      // Token non valido o scaduto
+      throw new Error(`Token verification failed: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('✅ Authentication successful, user:', data.user.email);
     
-    // Aggiorna il ruolo dell'utente
-    const userRole = data.user.role;
-    localStorage.setItem('userRole', userRole);
-    
-    // Mostra/nascondi pulsante admin
-    const adminBtn = document.getElementById('adminPanelBtn');
-    if (adminBtn) {
-      adminBtn.style.display = userRole === 'admin' ? 'block' : 'none';
+    if (!data.user || !data.user.email) {
+      throw new Error('Invalid token verification response');
     }
     
+    console.log('✅ Authentication successful, user:', data.user.email);
+    
+    // Salva utente corrente
+    currentUser = data.user;
+    localStorage.setItem('userRole', data.user.role);
+    localStorage.setItem('userEmail', data.user.email);
+    
+    // Aggiorna UI
+    updateUserInterface();
+    
   } catch (error) {
-    console.log('❌ Authentication failed:', error.message);
-    alert('Sessione scaduta. Reindirizzamento al login...');
-    localStorage.clear();
-    window.location.href = '/login.html';
+    console.error('❌ Authentication failed:', error.message);
+    console.log('Clearing invalid authentication data...');
+    redirectToLogin('Sessione scaduta. Effettua nuovamente il login.');
   }
 });
+
+// --- Funzione helper per redirect sicuro al login ---
+function redirectToLogin(message) {
+  // Pulisci completamente i dati di autenticazione
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('userEmail');
+  
+  if (message) {
+    alert(message);
+  }
+  
+  window.location.href = '/login.html';
+}
+
+// Update user interface based on current user
+function updateUserInterface() {
+  if (!currentUser) return;
+  
+  // Update user info
+  const userInfo = document.getElementById('userInfo');
+  if (userInfo) {
+    const roleIcon = currentUser.role === 'admin' ? '👑' : '👤';
+    userInfo.textContent = `${roleIcon} ${currentUser.email}`;
+  }
+  
+  // Show/hide admin button
+  const adminBtn = document.getElementById('adminPanelBtn');
+  if (adminBtn) {
+    adminBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
+  }
+}
 
 // --- Funzione di logout ---
 function logout() {
@@ -66,11 +107,28 @@ function logout() {
   }
 }
 
-// --- Aggiungi event listener per logout button (se esiste) ---
+// --- Event listeners per menu buttons ---
 document.addEventListener('DOMContentLoaded', function() {
+  // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', logout);
+  }
+  
+  // Profile button
+  const profileBtn = document.getElementById('profileBtn');
+  if (profileBtn) {
+    profileBtn.addEventListener('click', () => {
+      window.location.href = '/profile.html';
+    });
+  }
+  
+  // Admin panel button
+  const adminPanelBtn = document.getElementById('adminPanelBtn');
+  if (adminPanelBtn) {
+    adminPanelBtn.addEventListener('click', () => {
+      window.location.href = '/admin/admin.html';
+    });
   }
 });
 

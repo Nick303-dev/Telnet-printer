@@ -1,0 +1,38 @@
+const express = require("express");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const db = require("../../db.js");
+
+const router = express.Router();
+
+// Login
+router.post("/login", (req, res) => {
+  const { email, password, rememberMe } = req.body;
+
+  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
+    if (err) return res.status(500).json({ message: "Errore server" });
+    if (results.length === 0) return res.status(401).json({ message: "Utente non trovato" });
+
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ message: "Password sbagliata" });
+
+    const expiresIn = rememberMe ? "365d" : "1h";
+    const maxAge = rememberMe ? 365*24*60*60*1000 : 60*60*1000;
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || "segreto", { expiresIn });
+
+    res.cookie("authenticator", token, {
+      httpOnly: true,
+      secure: false,     
+      sameSite: "Strict",
+      maxAge
+    });
+
+    res.json({ message: "Login riuscito!" });
+  });
+});
+
+
+
+module.exports = router;

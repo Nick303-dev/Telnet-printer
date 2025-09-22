@@ -1,4 +1,4 @@
-
+version: "3.9"
 
 services:
   server:
@@ -9,20 +9,17 @@ services:
       NODE_ENV: production
       DB_HOST: db
       DB_USER: telnet
-      DB_PASSWORD: acqua123
+      DB_PASSWORD: Cbl_Scuola
       DB_NAME: telnet_printer_db
       DB_PORT: 3306
-      JWT_SECRET : segereto
-      IP : 10.2.12.244
-      
-
-      REFRESH_SECRET : Dario
-    
+      JWT_SECRET: segereto
+      IP: 10.2.12.244
+      REFRESH_SECRET: Dario
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       db:
-          condition: service_healthy
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -30,17 +27,18 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Cbl_Scuola
       MYSQL_DATABASE: telnet_printer_db
+      MYSQL_USER: telnet
+      MYSQL_PASSWORD: Cbl_Scuola
     ports:
       - "3306:3306"
     volumes:
-      - db-data:/var/lib/mysql   # ← RIGA 18 CORRETTA: "db-data", non "db-"
+      - db-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pCbl_Scuola"]
-
-
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
   db-data:
+    driver: local

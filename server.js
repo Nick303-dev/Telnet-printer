@@ -1,37 +1,58 @@
 const express = require('express');
 require('dotenv').config();
 const path = require('path');
-const mysql = require('mysql2');
-const db = require('./db.js'); // importa il pool condiviso
+const db = require('./db.js');
 
-// --- Importa router ---
-const { router, authMiddleware } = require('./router.js');
-const loginRouter = require('./login/backend/route/router.js');
+// --- Import organized routes ---
+const routes = require('./routes');
+const { authMiddleware } = require('./middleware/auth');
+
+// --- Smart static file middleware ---
+function smartStaticMiddleware(staticPath) {
+  return (req, res, next) => {
+    const ext = path.extname(req.path).toLowerCase();
+    const allowedExtensions = ['.html', '.css', '.js', '.json', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot'];
+    
+    // Allow specific file types without authentication
+    if (allowedExtensions.includes(ext)) {
+      return express.static(staticPath)(req, res, next);
+    }
+    
+    // For other files, require authentication
+    return authMiddleware(req, res, (err) => {
+      if (err) return next(err);
+      express.static(staticPath)(req, res, next);
+    });
+  };
+}
+
+// --- Create app ---
+const app = express();
 
 // --- Middleware ---
-const app = express();
 app.use(express.json());
 
-// --- API routes ---
-app.use('/', loginRouter);
-app.use('/api', router);
-app.use(express.static(path.join(__dirname, '../../public')));
-
-// --- Serve login files without authentication ---
+// --- Static files (public access) ---
+// Login files accessible without authentication
 app.use(express.static(path.join(__dirname, 'login/frontend')));
 
-// --- Serve printer.html and other static files WITHOUT server-side auth ---
-// L'autenticazione sarà gestita lato client con JavaScript
-app.use(express.static(path.join(__dirname)));
+// --- Protected static files with smart middleware ---
+// HTML/CSS/JS accessible (protected by client-side guard), other files require auth
+app.use('/printer', smartStaticMiddleware(path.join(__dirname, 'printer')));
+app.use('/admin', smartStaticMiddleware(path.join(__dirname, 'admin')));
+app.use('/public', smartStaticMiddleware(path.join(__dirname, 'public')));
 
-// --- Serve protected static files (se necessario) ---
-app.use('/public', authMiddleware, express.static(path.join(__dirname, 'public')));
+// --- API routes ---
+app.use('/', routes);
 
-// --- Redirect root to login ---
+// --- Serve protected static files ---
+app.use('/protected', authMiddleware, express.static(path.join(__dirname, 'protected')));
+
+// --- Root redirect ---
 app.get('/', (req, res) => res.redirect('/login.html'));
 
 // --- Avvio server ---
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {
   try {
     await db.query('SELECT 1');

@@ -5,11 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Telnet Printer — Interfaccia Web</title>
 <link rel="stylesheet" href="styles.css">
+<!-- EMERGENCY SECURITY GUARD -->
+<script>
+// EMERGENCY AUTH GUARD - IMPROVED VERSION
+(function() {
+    'use strict';
+    console.log('🛡️ IMPROVED AUTH GUARD ACTIVATED');
+    
+    // Check if we're on a protected page
+    if (window.location.pathname.includes('/printer/') || 
+        window.location.pathname.includes('/admin/') ||
+        window.location.pathname.includes('/profile')) {
+        
+        console.log('📍 Protected page detected, checking authentication...');
+        
+        // Check for valid token
+        const token = localStorage.getItem('accessToken');
+        
+        if (!token) {
+            console.log('❌ No access token found, redirecting to login');
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('🔒 Accesso negato. Devi effettuare il login.');
+            window.location.href = '/login.html';
+            return;
+        }
+        
+        // Token exists, let the main script verify it
+        console.log('✅ Token found, proceeding with verification...');
+    }
+})();
+</script>
 </head>
 <body>
-  <div class="card">
-    <h1>Telnet Printer — Interfaccia Web</h1>
-    <p class="lead">Inserisci IP/porta e invia testo o file alla stampante</p>
+    <div class="card">
+        <div class="header-section">
+            <div class="title-section">
+                <h1>Telnet Printer — Interfaccia Web</h1>
+                <p class="lead">Inserisci IP/porta e invia testo o file alla stampante</p>
+            </div>
+            <div class="user-menu">
+                <div id="userInfo" class="user-info">Caricamento...</div>
+                <div class="menu-buttons">
+                    <button id="profileBtn" class="menu-btn" title="Il mio profilo">👤 Profilo</button>
+                    <button id="adminPanelBtn" class="menu-btn admin-only" style="display:none;" title="Pannello amministratore">🛠️ Admin</button>
+                    <button id="logoutBtn" class="menu-btn logout" title="Logout">🚪 Logout</button>
+                </div>
+            </div>
+        </div>
 
     <div class="row">
       <div style="flex:1">

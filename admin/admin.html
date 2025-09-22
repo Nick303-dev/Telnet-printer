@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Telnet Printer</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>🛠️ Admin Panel</h1>
+            <div class="admin-info">
+                <span id="adminInfo">Loading...</span>
+                <button id="backToPrinter" class="btn-secondary">🔙 Torna al Printer</button>
+                <button id="logoutBtn" class="btn-danger">🚪 Logout</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <!-- Statistics Section -->
+            <section class="stats-section">
+                <h2>📊 Statistiche</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">-</div>
+                        <div class="stat-label">Utenti Totali</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeUsers">-</div>
+                        <div class="stat-label">Utenti Attivi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminUsers">-</div>
+                        <div class="stat-label">Amministratori</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create User Section -->
+            <section class="create-user-section">
+                <h2>➕ Crea Nuovo Utente</h2>
+                <form id="createUserForm" class="create-form">
+                    <div class="form-group">
+                        <label for="newUserEmail">Email:</label>
+                        <input type="email" id="newUserEmail" required placeholder="utente@esempio.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserRole">Ruolo:</label>
+                        <select id="newUserRole">
+                            <option value="user">👤 User</option>
+                            <option value="admin">👑 Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">✨ Crea Utente</button>
+                </form>
+            </section>
+
+            <!-- Users Management Section -->
+            <section class="users-section">
+                <h2>👥 Gestione Utenti</h2>
+                <div class="table-container">
+                    <table id="usersTable" class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Ruolo</th>
+                                <th>Stato</th>
+                                <th>Data Creazione</th>
+                                <th>Ultimo Aggiornamento</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">⏳ Caricamento utenti...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for showing generated passwords -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔑 Password Generata</h3>
+                <span class="close" onclick="closePasswordModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Password temporanea per <strong id="passwordUserEmail"></strong>:</p>
+                <div class="password-display">
+                    <input type="text" id="generatedPassword" readonly>
+                    <button onclick="copyPassword()" class="btn-secondary">📋 Copia</button>
+                </div>
+                <p class="warning">⚠️ <strong>IMPORTANTE:</strong> Salva questa password! Sarà mostrata solo questa volta. L'utente potrà cambiarla dal suo profilo.</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closePasswordModal()" class="btn-primary">Ho salvato la password</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

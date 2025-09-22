@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il mio Profilo - Telnet Printer</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <div class="profile-container">
+        <header class="profile-header">
+            <h1>👤 Il mio Profilo</h1>
+            <div class="header-buttons">
+                <button id="backToPrinter" class="btn-secondary">🔙 Torna al Printer</button>
+                <button id="logoutBtn" class="btn-danger">🚪 Logout</button>
+            </div>
+        </header>
+
+        <main class="profile-main">
+            <!-- User Info Section -->
+            <section class="user-info-section">
+                <h2>📋 Informazioni Account</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Email:</label>
+                        <span id="userEmail">Caricamento...</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Ruolo:</label>
+                        <span id="userRole">Caricamento...</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Stato Account:</label>
+                        <span id="userStatus">Caricamento...</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Account creato:</label>
+                        <span id="userCreated">Caricamento...</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Ultimo aggiornamento:</label>
+                        <span id="userUpdated">Caricamento...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Change Password Section -->
+            <section class="change-password-section">
+                <h2>🔒 Cambia Password</h2>
+                <p class="section-description">
+                    Per la sicurezza del tuo account, ti consigliamo di cambiare periodicamente la password.
+                </p>
+                
+                <form id="changePasswordForm" class="password-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Password Attuale:</label>
+                        <div class="password-input">
+                            <input type="password" id="currentPassword" required placeholder="Inserisci la password attuale">
+                            <button type="button" class="toggle-password" data-target="currentPassword">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Nuova Password:</label>
+                        <div class="password-input">
+                            <input type="password" id="newPassword" required placeholder="Inserisci la nuova password" minlength="6">
+                            <button type="button" class="toggle-password" data-target="newPassword">👁️</button>
+                        </div>
+                        <div class="password-requirements">
+                            <small>La password deve essere lunga almeno 6 caratteri</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Conferma Nuova Password:</label>
+                        <div class="password-input">
+                            <input type="password" id="confirmPassword" required placeholder="Conferma la nuova password" minlength="6">
+                            <button type="button" class="toggle-password" data-target="confirmPassword">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">🔄 Cambia Password</button>
+                        <button type="button" id="cancelBtn" class="btn-secondary">❌ Annulla</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Security Tips Section -->
+            <section class="security-tips-section">
+                <h2>🛡️ Suggerimenti per la Sicurezza</h2>
+                <div class="tips-grid">
+                    <div class="tip-item">
+                        <div class="tip-icon">🔐</div>
+                        <div class="tip-content">
+                            <h4>Password Sicura</h4>
+                            <p>Usa una combinazione di lettere maiuscole, minuscole, numeri e simboli.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">🔄</div>
+                        <div class="tip-content">
+                            <h4>Cambia Regolarmente</h4>
+                            <p>Cambia la password ogni 3-6 mesi per mantenere il tuo account sicuro.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">🚫</div>
+                        <div class="tip-content">
+                            <h4>Non Condividere</h4>
+                            <p>Non condividere mai la tua password con altri utenti.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">🔒</div>
+                        <div class="tip-content">
+                            <h4>Logout Sicuro</h4>
+                            <p>Fai sempre logout quando usi computer condivisi o pubblici.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>

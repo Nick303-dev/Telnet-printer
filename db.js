@@ -9,6 +9,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'telnet_printer_db',
   waitForConnections: true,
   connectionLimit: 10,
+  ssl: false
 });
 
 module.exports = pool.promise();

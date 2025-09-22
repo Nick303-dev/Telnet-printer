@@ -21,28 +21,18 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password, rememberMe } = req.body;
 
-    // Validazione input
     if (!email || !password || typeof rememberMe !== 'boolean') {
       return res.status(400).json({ result: 'Missing or invalid required fields' });
     }
 
-    if (email.length < 3 || email.length > 50) {
-      return res.status(400).json({ result: 'Invalid email length' });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ result: 'Invalid password length' });
-    }
-
-    const [rows] = await db.query('SELECT * FROM USERS WHERE email = ?', [email]);
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (rows.length === 0) {
       return res.status(401).json({ result: 'Invalid credentials' });
     }
 
     const user = rows[0];
-    
-    // Verifica se l'account è attivo (se hai un campo status)
-    if (user.status && user.status == 'disabled') {
+
+    if (user.status && user.status === 'disabled') {
       return res.status(401).json({ result: 'Account disabled' });
     }
 
@@ -51,26 +41,26 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ result: 'Invalid credentials' });
     }
 
+    // Qui ci arrivi SOLO se tutto è valido
     const accessToken = generateAccessToken(user);
     const refreshToken = rememberMe ? generateRefreshToken(user) : null;
 
-    // Log successful login
     console.log(`✅ User ${email} logged in successfully`);
 
-    res.json({ 
-      result: 'Login successful', 
-      accessToken, 
+    return res.json({
+      result: 'Login successful',
+      accessToken,
       refreshToken,
       user: {
         id: user.id,
         email: user.email,
         role: user.role
       }
-      
     });
+
   } catch (err) {
-    console.error('❌ Login error:', err.message);
-    res.status(500).json({ result: 'Internal server error' });
+    console.error('❌ Login error:', err);
+    return res.status(500).json({ result: 'Internal server error' });
   }
 });
 router.get('/api/printer-data', authMiddleware, async (req, res) => {

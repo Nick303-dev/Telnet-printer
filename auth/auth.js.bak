@@ -1,0 +1,34 @@
+const jwt = require("jsonwebtoken");
+
+function authMiddleware(req, res, next) {
+  // Cerca il token nei cookies o nell'header Authorization
+  let token = null;
+  
+  // Prova prima dai cookies (per compatibilità)
+  if (req.cookies && req.cookies.authenticator) {
+    token = req.cookies.authenticator;
+  }
+  
+  // Se non trovato nei cookies, prova nell'header Authorization
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+  }
+  
+  if (!token) {
+    return res.status(401).json({ result: "Token mancante" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || "segreto", (err, decoded) => {
+    if (err) {
+      console.error('JWT verification error:', err.message);
+      return res.status(401).json({ result: "Token non valido" });
+    }
+    req.user = decoded;
+    next();
+  });
+}
+
+module.exports = authMiddleware;

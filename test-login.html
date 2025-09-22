@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Behavior</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .success { background: #4CAF50; color: white; }
+        .error { background: #f44336; color: white; }
+        .warning { background: #ff9800; color: white; }
+        .info { background: #2196F3; color: white; }
+        #results {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Login Behavior</h1>
+    <p>Questa pagina testa il comportamento del sistema di login per verificare che gli errori vengano gestiti correttamente.</p>
+
+    <div class="test-section">
+        <h3>Test Automatici API</h3>
+        <button class="test-button success" onclick="testValidLogin()">✅ Test Login Valido</button>
+        <button class="test-button error" onclick="testInvalidLogin()">❌ Test Login Non Valido</button>
+        <button class="test-button warning" onclick="testMissingFields()">⚠️ Test Campi Mancanti</button>
+        <button class="test-button info" onclick="clearResults()">🧹 Pulisci Risultati</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Manuali Browser</h3>
+        <p>Per testare il comportamento della pagina di login:</p>
+        <ol>
+            <li><a href="/login.html" target="_blank">Apri la pagina di login</a></li>
+            <li>Prova con credenziali errate (es: admin@test.com / passworderrata)</li>
+            <li>Verifica che NON venga fatto redirect e che appaia l'errore</li>
+            <li>Prova con credenziali corrette (admin@test.com / admin123)</li>
+            <li>Verifica che venga fatto redirect alla pagina printer</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Credenziali di Test</h3>
+        <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+            <tr style="background: #f0f0f0;">
+                <th>Email</th>
+                <th>Password</th>
+                <th>Ruolo</th>
+                <th>Stato</th>
+            </tr>
+            <tr>
+                <td>admin@test.com</td>
+                <td>admin123</td>
+                <td>admin</td>
+                <td>✅ Valido</td>
+            </tr>
+            <tr>
+                <td>user@test.com</td>
+                <td>user123</td>
+                <td>user</td>
+                <td>✅ Valido</td>
+            </tr>
+            <tr>
+                <td>nuovo@test.com</td>
+                <td>0ljVnIs9</td>
+                <td>user</td>
+                <td>✅ Valido</td>
+            </tr>
+            <tr style="background: #ffebee;">
+                <td>admin@test.com</td>
+                <td>passworderrata</td>
+                <td>-</td>
+                <td>❌ Invalido</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.textContent += `[${timestamp}] ${message}\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').textContent = '';
+        }
+
+        async function testValidLogin() {
+            log('🧪 Test Login Valido - Inizio');
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: 'admin123',
+                        rememberMe: true
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ SUCCESS: ${data.result}`);
+                    log(`   User: ${data.user.email} (${data.user.role})`);
+                    log(`   Access Token: ${data.accessToken ? 'Present' : 'Missing'}`);
+                } else {
+                    log(`❌ UNEXPECTED ERROR: ${data.result}`);
+                }
+            } catch (error) {
+                log(`💥 NETWORK ERROR: ${error.message}`);
+            }
+            log('');
+        }
+
+        async function testInvalidLogin() {
+            log('🧪 Test Login Non Valido - Inizio');
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: 'passworderrata',
+                        rememberMe: false
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    log(`✅ EXPECTED ERROR: ${data.result}`);
+                    log(`   Status: ${response.status} ${response.statusText}`);
+                } else {
+                    log(`⚠️ UNEXPECTED SUCCESS: ${data.result}`);
+                }
+            } catch (error) {
+                log(`💥 NETWORK ERROR: ${error.message}`);
+            }
+            log('');
+        }
+
+        async function testMissingFields() {
+            log('🧪 Test Campi Mancanti - Inizio');
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        // password mancante
+                        rememberMe: false
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    log(`✅ EXPECTED ERROR: ${data.result}`);
+                    log(`   Status: ${response.status} ${response.statusText}`);
+                } else {
+                    log(`⚠️ UNEXPECTED SUCCESS: ${data.result}`);
+                }
+            } catch (error) {
+                log(`💥 NETWORK ERROR: ${error.message}`);
+            }
+            log('');
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', function() {
+            log('🚀 Pagina di test caricata');
+            log('📡 Server endpoint: http://localhost:3001/login');
+            log('🔗 Login page: http://localhost:3001/login.html');
+            log('');
+        });
+    </script>
+</body>
+</html>
