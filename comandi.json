@@ -1,0 +1,741 @@
+{
+  "slcs_commands": {
+    "text_and_graphics": {
+      "T": {
+        "name": "Text String",
+        "description": "Draw text string on the image buffer",
+        "syntax": "Tp1,p2,p3,p4,p5,p6,p7,p8,p9(,p10),'DATA'",
+        "parameters": {
+          "p1": {
+            "name": "Horizontal position (X)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Vertical position (Y)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p3": {
+            "name": "Font selection",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "6pt (9×15)"},
+              {"value": "1", "label": "8pt (12×20)"},
+              {"value": "2", "label": "10pt (16×25)"},
+              {"value": "3", "label": "12pt (19×30)"},
+              {"value": "4", "label": "15pt (24×38)"},
+              {"value": "5", "label": "20pt (32×50)"},
+              {"value": "6", "label": "30pt (48×76)"},
+              {"value": "7", "label": "14pt (22×34)"},
+              {"value": "8", "label": "18pt (28×44)"},
+              {"value": "9", "label": "24pt (37×58)"},
+              {"value": "a", "label": "Korean 1 (16×16)"},
+              {"value": "b", "label": "Korean 2 (24×24)"},
+              {"value": "c", "label": "Korean 3 (20×20)"},
+              {"value": "d", "label": "Korean 4 (26×26)"},
+              {"value": "e", "label": "Korean 5 (20×26)"},
+              {"value": "f", "label": "Korean 6 (38×38)"},
+              {"value": "m", "label": "GB2312 (24×24)"},
+              {"value": "n", "label": "BIG5 (24×24)"},
+              {"value": "j", "label": "Shift JIS (24×24)"}
+            ]
+          },
+          "p4": {
+            "name": "Horizontal multiplier",
+            "type": "select",
+            "options": [
+              {"value": "1", "label": "1x"},
+              {"value": "2", "label": "2x"},
+              {"value": "3", "label": "3x"},
+              {"value": "4", "label": "4x"}
+            ]
+          },
+          "p5": {
+            "name": "Vertical multiplier",
+            "type": "select",
+            "options": [
+              {"value": "1", "label": "1x"},
+              {"value": "2", "label": "2x"},
+              {"value": "3", "label": "3x"},
+              {"value": "4", "label": "4x"}
+            ]
+          },
+          "p6": {
+            "name": "Character spacing",
+            "type": "number",
+            "unit": "dots",
+            "min": -50,
+            "max": 50,
+            "default": 0
+          },
+          "p7": {
+            "name": "Rotation",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "0° (No rotation)"},
+              {"value": "1", "label": "90°"},
+              {"value": "2", "label": "180°"},
+              {"value": "3", "label": "270°"}
+            ]
+          },
+          "p8": {
+            "name": "Reverse printing",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "Normal"},
+              {"value": "R", "label": "Reverse"}
+            ]
+          },
+          "p9": {
+            "name": "Bold",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "Normal"},
+              {"value": "B", "label": "Bold"}
+            ]
+          },
+          "p10": {
+            "name": "Text alignment (optional)",
+            "type": "select",
+            "options": [
+              {"value": "F", "label": "Left alignment"},
+              {"value": "L", "label": "Right alignment"},
+              {"value": "R", "label": "Right to left"}
+            ]
+          },
+          "data": {
+            "name": "Text data",
+            "type": "textarea",
+            "placeholder": "Enter text to print"
+          }
+        }
+      },
+      "V": {
+        "name": "Vector Font Text",
+        "description": "Draw text (Vector Font) string on the image buffer",
+        "syntax": "Vp1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,'DATA'",
+        "parameters": {
+          "p1": {
+            "name": "Horizontal position (X)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Vertical position (Y)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p3": {
+            "name": "Font selection",
+            "type": "select",
+            "options": [
+              {"value": "U", "label": "ASCII (1 byte)"},
+              {"value": "K", "label": "KS5601 (2 byte)"},
+              {"value": "B", "label": "BIG5 (2 byte)"},
+              {"value": "G", "label": "GB2312 (2 byte)"},
+              {"value": "J", "label": "Shift-JIS (2 byte)"},
+              {"value": "a", "label": "OCR-A (1 byte)"},
+              {"value": "b", "label": "OCR-B (1 byte)"}
+            ]
+          },
+          "p4": {
+            "name": "Font width",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 200
+          },
+          "p5": {
+            "name": "Font height",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 200
+          },
+          "p6": {
+            "name": "Character spacing",
+            "type": "number",
+            "unit": "dots",
+            "min": -50,
+            "max": 50
+          },
+          "p7": {
+            "name": "Bold",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "Normal"},
+              {"value": "B", "label": "Bold"}
+            ]
+          },
+          "p8": {
+            "name": "Reverse printing",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "Normal"},
+              {"value": "R", "label": "Reverse"}
+            ]
+          },
+          "p9": {
+            "name": "Text style",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "Normal"},
+              {"value": "I", "label": "Italic"}
+            ]
+          },
+          "p10": {
+            "name": "Rotation",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "0°"},
+              {"value": "1", "label": "90°"},
+              {"value": "2", "label": "180°"},
+              {"value": "3", "label": "270°"}
+            ]
+          },
+          "p11": {
+            "name": "Text alignment",
+            "type": "select",
+            "options": [
+              {"value": "L", "label": "Left"},
+              {"value": "R", "label": "Right"},
+              {"value": "C", "label": "Center"}
+            ]
+          },
+          "p12": {
+            "name": "Write direction",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "Left to right"},
+              {"value": "1", "label": "Right to left"}
+            ]
+          },
+          "data": {
+            "name": "Text data",
+            "type": "textarea",
+            "placeholder": "Enter text to print"
+          }
+        }
+      },
+      "B1": {
+        "name": "1D Barcode",
+        "description": "Draw 1D Barcode on the image buffer",
+        "syntax": "B1p1,p2,p3,p4,p5,p6,p7,p8(,p9),'DATA'",
+        "parameters": {
+          "p1": {
+            "name": "Horizontal position (X)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Vertical position (Y)",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p3": {
+            "name": "Barcode type",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "Code39"},
+              {"value": "1", "label": "Code128"},
+              {"value": "2", "label": "I2of5"},
+              {"value": "3", "label": "Codabar"},
+              {"value": "4", "label": "Code93"},
+              {"value": "5", "label": "UPC-A"},
+              {"value": "6", "label": "UPC-E"},
+              {"value": "7", "label": "EAN13"},
+              {"value": "8", "label": "EAN8"},
+              {"value": "9", "label": "UCC/EAN128"}
+            ]
+          },
+          "p4": {
+            "name": "Narrow bar width",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 10
+          },
+          "p5": {
+            "name": "Wide bar width",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 20
+          },
+          "p6": {
+            "name": "Barcode height",
+            "type": "number",
+            "unit": "dots",
+            "min": 10,
+            "max": 500
+          },
+          "p7": {
+            "name": "Rotation",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "0°"},
+              {"value": "1", "label": "90°"},
+              {"value": "2", "label": "180°"},
+              {"value": "3", "label": "270°"}
+            ]
+          },
+          "p8": {
+            "name": "HRI (Human Readable)",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "Not printed"},
+              {"value": "1", "label": "Below (Font 1)"},
+              {"value": "2", "label": "Above (Font 1)"},
+              {"value": "3", "label": "Below (Font 2)"},
+              {"value": "4", "label": "Above (Font 2)"},
+              {"value": "5", "label": "Below (Font 3)"},
+              {"value": "6", "label": "Above (Font 3)"},
+              {"value": "7", "label": "Below (Font 4)"},
+              {"value": "8", "label": "Above (Font 4)"}
+            ]
+          },
+          "p9": {
+            "name": "Quiet zone width (optional)",
+            "type": "number",
+            "unit": "multiplier",
+            "min": 0,
+            "max": 20,
+            "default": 0
+          },
+          "data": {
+            "name": "Barcode data",
+            "type": "text",
+            "placeholder": "Enter barcode data"
+          }
+        }
+      },
+      "BD": {
+        "name": "Block Draw",
+        "description": "Draw Line, Block, Box & Slope on the image buffer",
+        "syntax": "BDp1,p2,p3,p4,p5(,p6)",
+        "parameters": {
+          "p1": {
+            "name": "Start X position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Start Y position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p3": {
+            "name": "End X position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p4": {
+            "name": "End Y position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p5": {
+            "name": "Drawing mode",
+            "type": "select",
+            "options": [
+              {"value": "O", "label": "Line Overwriting"},
+              {"value": "E", "label": "Line Exclusive OR"},
+              {"value": "D", "label": "Line Delete"},
+              {"value": "S", "label": "Slope (requires thickness)"},
+              {"value": "B", "label": "Box (requires thickness)"}
+            ]
+          },
+          "p6": {
+            "name": "Thickness (for Slope/Box)",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 100,
+            "conditional": "p5 === 'S' || p5 === 'B'"
+          }
+        }
+      },
+      "CD": {
+        "name": "Circle Draw",
+        "description": "Draw Circle on the image buffer",
+        "syntax": "CDp1,p2,p3,p4",
+        "parameters": {
+          "p1": {
+            "name": "X position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Y position",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          },
+          "p3": {
+            "name": "Circle size",
+            "type": "select",
+            "options": [
+              {"value": "1", "label": "5mm (40×40 dots)"},
+              {"value": "2", "label": "7mm (56×56 dots)"},
+              {"value": "3", "label": "9mm (72×72 dots)"},
+              {"value": "4", "label": "11mm (88×88 dots)"},
+              {"value": "5", "label": "13mm (104×104 dots)"},
+              {"value": "6", "label": "21mm (168×168 dots)"}
+            ]
+          },
+          "p4": {
+            "name": "Multiplier",
+            "type": "select",
+            "options": [
+              {"value": "1", "label": "1x"},
+              {"value": "2", "label": "2x"},
+              {"value": "3", "label": "3x"},
+              {"value": "4", "label": "4x"}
+            ]
+          }
+        }
+      }
+    },
+    "media_buffer": {
+      "ST": {
+        "name": "Set Printing Type",
+        "description": "Select Thermal Direct/Transfer Printing",
+        "syntax": "STp1",
+        "parameters": {
+          "p1": {
+            "name": "Printing type",
+            "type": "select",
+            "options": [
+              {"value": "d", "label": "Direct Thermal"},
+              {"value": "t", "label": "Thermal Transfer"}
+            ]
+          }
+        }
+      },
+      "SM": {
+        "name": "Set Margin",
+        "description": "Set marginal value of the image buffer",
+        "syntax": "SMp1,p2",
+        "parameters": {
+          "p1": {
+            "name": "Horizontal margin",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 832
+          },
+          "p2": {
+            "name": "Vertical margin",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 2432
+          }
+        }
+      },
+      "SF": {
+        "name": "Set Back-Feed Option",
+        "description": "Set back-feed option",
+        "syntax": "SFp1(,p2)",
+        "parameters": {
+          "p1": {
+            "name": "Enable/Disable",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "Disable"},
+              {"value": "1", "label": "Enable"}
+            ]
+          },
+          "p2": {
+            "name": "Back feeding steps",
+            "type": "number",
+            "unit": "steps",
+            "min": 0,
+            "max": 1000,
+            "conditional": "p1 === '1'"
+          }
+        }
+      },
+      "SL": {
+        "name": "Set Length",
+        "description": "Set length of label and gap/Black Mark",
+        "syntax": "SLp1,p2(,p3)(,p4)",
+        "parameters": {
+          "p1": {
+            "name": "Label length",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 2432
+          },
+          "p2": {
+            "name": "Gap/Black mark length",
+            "type": "number",
+            "unit": "dots",
+            "min": 0,
+            "max": 200
+          },
+          "p3": {
+            "name": "Media type",
+            "type": "select",
+            "options": [
+              {"value": "G", "label": "Gap"},
+              {"value": "C", "label": "Continuous"},
+              {"value": "B", "label": "Black Mark"}
+            ]
+          },
+          "p4": {
+            "name": "Offset length",
+            "type": "number",
+            "unit": "dots",
+            "min": -200,
+            "max": 200,
+            "conditional": "p3 !== undefined"
+          }
+        }
+      },
+      "SW": {
+        "name": "Set Width",
+        "description": "Set label width",
+        "syntax": "SWp1",
+        "parameters": {
+          "p1": {
+            "name": "Label width",
+            "type": "number",
+            "unit": "dots",
+            "min": 1,
+            "max": 832
+          }
+        }
+      },
+      "SB": {
+        "name": "Set Buffer Mode",
+        "description": "Set double buffer mode",
+        "syntax": "SBp1",
+        "parameters": {
+          "p1": {
+            "name": "Double buffering",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "Disable"},
+              {"value": "1", "label": "Enable"}
+            ]
+          }
+        }
+      },
+      "CB": {
+        "name": "Clear Buffer",
+        "description": "Clear image buffer",
+        "syntax": "CB",
+        "parameters": {}
+      }
+    },
+    "printer_settings": {
+      "SS": {
+        "name": "Set Speed",
+        "description": "Set print speed",
+        "syntax": "SSp1",
+        "parameters": {
+          "p1": {
+            "name": "Print speed",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "2.5 ips"},
+              {"value": "1", "label": "3.0 ips"},
+              {"value": "2", "label": "4.0 ips"},
+              {"value": "3", "label": "5.0 ips"},
+              {"value": "4", "label": "6.0 ips"},
+              {"value": "5", "label": "7.0 ips"},
+              {"value": "6", "label": "8.0 ips"}
+            ]
+          }
+        }
+      },
+      "SD": {
+        "name": "Set Density",
+        "description": "Set printing density",
+        "syntax": "SDp1",
+        "parameters": {
+          "p1": {
+            "name": "Density level",
+            "type": "range",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 10
+          }
+        }
+      },
+      "SO": {
+        "name": "Set Orientation",
+        "description": "Set printing direction",
+        "syntax": "SOp1",
+        "parameters": {
+          "p1": {
+            "name": "Print direction",
+            "type": "select",
+            "options": [
+              {"value": "T", "label": "Top to Bottom"},
+              {"value": "B", "label": "Bottom to Top"}
+            ]
+          }
+        }
+      },
+      "SP": {
+        "name": "Set Port",
+        "description": "Set serial port configuration",
+        "syntax": "SPp1,p2,p3,p4",
+        "parameters": {
+          "p1": {
+            "name": "Baud rate",
+            "type": "select",
+            "options": [
+              {"value": "0", "label": "9,600 bps"},
+              {"value": "1", "label": "19,200 bps"},
+              {"value": "2", "label": "38,400 bps"},
+              {"value": "3", "label": "57,600 bps"},
+              {"value": "4", "label": "115,200 bps"}
+            ]
+          },
+          "p2": {
+            "name": "Parity",
+            "type": "select",
+            "options": [
+              {"value": "N", "label": "No parity"},
+              {"value": "E", "label": "Even parity"},
+              {"value": "O", "label": "Odd parity"}
+            ]
+          },
+          "p3": {
+            "name": "Data bits",
+            "type": "select",
+            "options": [
+              {"value": "7", "label": "7 bits"},
+              {"value": "8", "label": "8 bits"}
+            ]
+          },
+          "p4": {
+            "name": "Stop bits",
+            "type": "select",
+            "options": [
+              {"value": "1", "label": "1 bit"},
+              {"value": "2", "label": "2 bits"}
+            ]
+          }
+        }
+      },
+      "SA": {
+        "name": "Set Offset",
+        "description": "Set offset between marks and dotted lines",
+        "syntax": "SAp1",
+        "parameters": {
+          "p1": {
+            "name": "Offset value",
+            "type": "range",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "default": 0
+          }
+        }
+      },
+      "TA": {
+        "name": "Tear-off/Cutter Position",
+        "description": "Set label cutting/tearing position",
+        "syntax": "TAp1",
+        "parameters": {
+          "p1": {
+            "name": "Position adjustment",
+            "type": "range",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "default": 0
+          }
+        }
+      }
+    },
+    "control": {
+      "P": {
+        "name": "Print",
+        "description": "Start printing the content of image buffer",
+        "syntax": "Pp1,[p2]",
+        "parameters": {
+          "p1": {
+            "name": "Number of label sets",
+            "type": "number",
+            "min": 1,
+            "max": 65535,
+            "default": 1
+          },
+          "p2": {
+            "name": "Copies per label",
+            "type": "number",
+            "min": 1,
+            "max": 65535,
+            "default": 1
+          }
+        }
+      },
+      "@": {
+        "name": "Initialize Printer",
+        "description": "Initialize the printer",
+        "syntax": "@",
+        "parameters": {}
+      },
+      "PI": {
+        "name": "Printer Information",
+        "description": "Print current printer settings",
+        "syntax": "PI",
+        "parameters": {}
+      },
+      "CUT": {
+        "name": "Auto-cutter Control",
+        "description": "Enable/Disable auto-cut after printing",
+        "syntax": "CUTp1(,p2)",
+        "parameters": {
+          "p1": {
+            "name": "Cutter enable",
+            "type": "select",
+            "options": [
+              {"value": "y", "label": "Enable"},
+              {"value": "n", "label": "Disable"}
+            ]
+          },
+          "p2": {
+            "name": "Cut period (pages)",
+            "type": "number",
+            "min": 1,
+            "max": 100,
+            "default": 1,
+            "conditional": "p1 === 'y'"
+          }
+        }
+      }
+    }
+  }
+}

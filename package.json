@@ -1,0 +1,25 @@
+{
+  "name": "package.json",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "router.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nick303-dev/Telnet-printer.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Nick303-dev/Telnet-printer/issues"
+  },
+  "homepage": "https://github.com/Nick303-dev/Telnet-printer#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "telnet-client": "^2.2.6"
+  }
+}
