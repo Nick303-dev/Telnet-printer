@@ -1,13 +1,17 @@
-# Docker has specific installation instructions for each operating system.
-# Please refer to the official documentation at https://docker.com/get-started/
+# Usa l'ultima immagine Node
+FROM node:latest
 
-# Pull the Node.js Docker image:
-FROM node:22-alpine
+# Imposta la working directory
+WORKDIR /usr/src/app
 
-# Create a Node.js container and start a Shell session:
-WORKDIR /Telnet-printer
+# Copia package.json e package-lock.json
+COPY package*.json ./
 
-RUN npm installation
+# Installa le dipendenze
+RUN npm install --production
+
+# Copia tutto il resto del progetto
 COPY . .
-EXPOSE 3000
+
+# Comando di avvio
 CMD ["node", "server.js"]
