@@ -38,7 +38,7 @@ router.post('/send-command', async (req, res) => {
   }
 
   const cmd = buildCmdString(codeType, options, text);
-  
+
   // Log dell'operazione
   console.log(`User ${req.user.email} sending command to ${trimmedIP}:${port}`);
 
@@ -55,14 +55,14 @@ router.post('/send-command', async (req, res) => {
   try {
     await connection.connect(params);
     const result = await connection.send(cmd);
-    
-    res.json({ 
-      result: 'Command sent successfully', 
+
+    res.json({
+      result: 'Command sent successfully',
       response: result || 'No response from device'
     });
   } catch (err) {
     console.error(`Telnet error for user ${req.user.email}:`, err.message);
-    
+
     // Messaggi di errore più specifici
     let errorMessage = 'Connection failed';
     if (err.message.includes('timeout')) {
@@ -72,11 +72,11 @@ router.post('/send-command', async (req, res) => {
     } else if (err.message.includes('EHOSTUNREACH')) {
       errorMessage = 'Host unreachable - check IP address and network connectivity';
     }
-    
+
     res.status(500).json({ result: errorMessage });
   } finally {
-    try { 
-      await connection.end(); 
+    try {
+      await connection.end();
     } catch (endErr) {
       console.error('Error closing telnet connection:', endErr.message);
     }

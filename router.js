@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Telnet } = require('telnet-client');
 const db = require('./db.js');
-const authMiddleware = require('./auth/auth.js');
+const authMiddleware = require('./middleware/auth.js');
  
 const router = express.Router();
 
@@ -97,17 +97,16 @@ router.post("/login", async (req, res) => {
     const refreshToken = rememberMe ? generateRefreshToken(user) : null;
     
     console.log(`✅ Login successful for: ${email}`);
-    
-    res.json({ 
-      result: "Login successful",
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role
-      }
-    });
+    res.status(200).json({ 
+  result: "Login successful",
+  accessToken,
+  refreshToken,
+  user: {
+    id: user.id,
+    email: user.email,
+    role: user.role
+  }
+});
   } 
 }
 catch (error) {
@@ -131,6 +130,8 @@ router.get('/verify-token', authMiddleware, (req, res) => {
 // --- Logout ---
 router.post('/logout', authMiddleware, (req, res) => {
   console.log(`User ${req.user.email} logged out`);
+  res.clearCookie('authenticator');
+  res.clearCookie('refreshToken');
   res.json({ result: 'Logout successful' });
 });
 

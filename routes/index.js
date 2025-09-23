@@ -1,12 +1,11 @@
-const express = require('express');
-const path = require('path');
-const { authMiddleware } = require('../middleware/auth');
-
+import express from 'express';
+import path from 'path';
+import { authMiddleware } from '../middleware/auth.js';
 // Import organized route modules
-const authRoutes = require('./auth');
-const adminRoutes = require('./admin');
-const profileRoutes = require('./profile');
-const telnetRoutes = require('./telnet');
+import authRoutes from './auth.js';
+import adminRoutes from './admin.js';
+import profileRoutes from './profile.js';
+import telnetRoutes from './telnet.js';
 
 const router = express.Router();
 
@@ -39,6 +38,4 @@ router.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-module.exports = router;
-
-module.exports = router;
+export { router as default };

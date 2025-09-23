@@ -1,5 +1,4 @@
-const { verifyAccessToken } = require('../utils');
-
+import { verifyAccessToken } from '../utils/index.js';
 function authMiddleware(req, res, next) {
   // Cerca il token in diversi luoghi: header Authorization, body, query, cookies
   let token = null;
@@ -21,17 +20,20 @@ function authMiddleware(req, res, next) {
   }
   
   // 4. Cookies (per compatibilità con implementazione esistente)
-  if (!token && req.headers.cookie) {
-    const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.trim().split('=');
-      acc[key] = value;
-      return acc;
-    }, {});
-    
-    if (cookies.authenticator) {
-      token = cookies.authenticator;
-    }
+if (!token && req.headers.cookie) {
+  const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
+    const index = cookie.indexOf('=');          // trova il primo '='
+    const key = cookie.slice(0, index).trim();  // prende il nome del cookie
+    const value = cookie.slice(index + 1).trim(); // prende tutto il resto come valore
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  if (cookies.authenticator) {
+    token = cookies.authenticator;
   }
+}
+
   
   if (!token) {
     return res.status(401).json({ result: 'No valid token provided' });
@@ -54,4 +56,4 @@ function adminOnly(req, res, next) {
   next();
 }
 
-module.exports = { authMiddleware, adminOnly };
+export { authMiddleware, adminOnly };

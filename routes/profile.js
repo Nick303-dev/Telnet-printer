@@ -7,6 +7,7 @@ const router = express.Router();
 
 // Applica middleware di autenticazione a tutte le route profile
 router.use(authMiddleware);
+//ciao
 
 // --- Ottieni profilo utente corrente ---
 router.get('/', async (req, res) => {

@@ -1,3 +1,5 @@
+const { access } = require("fs");
+
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -26,7 +28,11 @@ document.getElementById('login-form').addEventListener('submit', async function(
         });
         
         const data = await response.json();
-        
+        const d = new Date();
+        d.setTime(d.getTime() + (1*60*60*1000)); // 1 hour expiration
+        let expires = "expires="+ d.toUTCString();
+        // Set cookie
+
         console.log('Login response status:', response.status);
         console.log('Login response data:', data);
         
@@ -42,20 +48,15 @@ document.getElementById('login-form').addEventListener('submit', async function(
             }
             
             // Salva i token SOLO se il login è davvero riuscito
-            console.log('💾 Saving tokens to localStorage...');
-            localStorage.setItem('accessToken', data.accessToken);
+        const accessToken = data.accessToken;
+        document.cookie = "authenticator=" + data.accessToken + "; max-age=3600; path=/";
+       
             console.log('✅ Access token saved:', data.accessToken.substring(0, 50) + '...');
             
-            if (data.refreshToken) {
-                localStorage.setItem('refreshToken', data.refreshToken);
-                console.log('✅ Refresh token saved');
-            }
             localStorage.setItem('userRole', data.user.role);
             localStorage.setItem('userEmail', data.user.email);
             
             // Verifica che sia stato salvato
-            const savedToken = localStorage.getItem('accessToken');
-            console.log('🔍 Verification - token in localStorage:', savedToken ? savedToken.substring(0, 50) + '...' : 'NOT FOUND');
             
             // Success message
             alert('✅ Login riuscito! Reindirizzamento...');
@@ -69,8 +70,11 @@ document.getElementById('login-form').addEventListener('submit', async function(
             console.error('❌ Login failed - Data:', data);
             
             // Pulisci qualsiasi dato di autenticazione esistente
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            // Cancella un cookie specifico
+document.cookie = "authenticator=; path=/; max-age=0";
+document.cookie = "refreshToken=; path=/; max-age=0";
+
+
             localStorage.removeItem('userRole');
             localStorage.removeItem('userEmail');
             

@@ -1,30 +1,13 @@
-const express = require('express');
-require('dotenv').config();
-const path = require('path');
-const db = require('./db.js');
+import express from 'express';
+import dotenv from 'dotenv';
+import path from 'path';
+import db from './db.js';
 
+dotenv.config();
 // --- Import organized routes ---
-const routes = require('./routes');
-const { authMiddleware } = require('./middleware/auth');
-
+import routes from './routes/index.js';
+import { authMiddleware } from './middleware/auth.js';
 // --- Smart static file middleware ---
-function smartStaticMiddleware(staticPath) {
-  return (req, res, next) => {
-    const ext = path.extname(req.path).toLowerCase();
-    const allowedExtensions = ['.html', '.css', '.js', '.json', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot'];
-    
-    // Allow specific file types without authentication
-    if (allowedExtensions.includes(ext)) {
-      return express.static(staticPath)(req, res, next);
-    }
-    
-    // For other files, require authentication
-    return authMiddleware(req, res, (err) => {
-      if (err) return next(err);
-      express.static(staticPath)(req, res, next);
-    });
-  };
-}
 
 // --- Create app ---
 const app = express();

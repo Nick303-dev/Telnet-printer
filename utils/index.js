@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 // === JWT HELPERS ===
 function generateAccessToken(user) {
@@ -90,7 +90,7 @@ function buildCmdString(codeType, options, text) {
   return cmdArray.join(',');
 }
 
-module.exports = {
+export {
   // JWT
   generateAccessToken,
   generateRefreshToken,

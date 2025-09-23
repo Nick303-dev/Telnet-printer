@@ -1,13 +1,13 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const db = require('../db');
-const { authMiddleware } = require('../middleware/auth');
-const { 
+import express from 'express';
+import bcrypt from 'bcrypt';
+import db from '../db.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { 
   generateAccessToken, 
   generateRefreshToken, 
   verifyRefreshToken,
   isValidEmail 
-} = require('../utils');
+} from '../utils';
 
 const router = express.Router();
 
@@ -55,7 +55,6 @@ router.post('/login', async (req, res) => {
     res.json({ 
       result: "Login successful",
       accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
