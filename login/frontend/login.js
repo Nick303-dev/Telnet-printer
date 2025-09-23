@@ -1,5 +1,3 @@
-const { access } = require("fs");
-
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -48,10 +46,12 @@ document.getElementById('login-form').addEventListener('submit', async function(
             }
             
             // Salva i token SOLO se il login è davvero riuscito
-        const accessToken = data.accessToken;
-        document.cookie = "authenticator=" + data.accessToken + "; max-age=3600; path=/";
-       
-            console.log('✅ Access token saved:', data.accessToken.substring(0, 50) + '...');
+            // Salva access token in localStorage per uso dell'applicazione
+            localStorage.setItem('accessToken', data.accessToken);
+            console.log('✅ Access token saved in localStorage:', data.accessToken.substring(0, 50) + '...');
+            
+            // Salva anche nel cookie per compatibilità con middleware legacy
+            document.cookie = "authenticator=" + data.accessToken + "; max-age=3600; path=/";
             
             localStorage.setItem('userRole', data.user.role);
             localStorage.setItem('userEmail', data.user.email);
@@ -70,11 +70,10 @@ document.getElementById('login-form').addEventListener('submit', async function(
             console.error('❌ Login failed - Data:', data);
             
             // Pulisci qualsiasi dato di autenticazione esistente
-            // Cancella un cookie specifico
-document.cookie = "authenticator=; path=/; max-age=0";
-document.cookie = "refreshToken=; path=/; max-age=0";
-
-
+            // Cancella cookie e localStorage
+            document.cookie = "authenticator=; path=/; max-age=0";
+            document.cookie = "refresh_token=; path=/; max-age=0";
+            localStorage.removeItem('accessToken');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userEmail');
             
@@ -104,6 +103,14 @@ document.cookie = "refreshToken=; path=/; max-age=0";
         
     } catch (error) {
         console.error('❌ Network error:', error);
+        
+        // Pulisci token in caso di errore di rete
+        document.cookie = "authenticator=; path=/; max-age=0";
+        document.cookie = "refresh_token=; path=/; max-age=0";
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userEmail');
+        
         alert('❌ Errore di connessione: ' + error.message);
     } finally {
         // Re-enable form

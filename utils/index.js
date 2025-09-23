@@ -1,21 +1,27 @@
 import jwt from 'jsonwebtoken';
 
 // === JWT HELPERS ===
-function generateAccessToken(user) {
+function generateAccessToken(user, opts = {}) {
   const payload = { id: user.id, email: user.email, role: user.role };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
+  const expiresIn = opts.expiresIn || '15m';
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 }
 
-function generateRefreshToken(user) {
+function generateRefreshToken(user, opts = {}) {
   const payload = { id: user.id };
-  return jwt.sign(payload, process.env.REFRESH_SECRET, { expiresIn: '7d' });
+  const expiresIn = opts.expiresIn || '7d';
+  return jwt.sign(payload, process.env.REFRESH_SECRET, { expiresIn });
 }
 
 function verifyAccessToken(token) {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return { ok: true, payload: decoded, expired: false };
   } catch (err) {
-    return null;
+    if (err && err.name === 'TokenExpiredError') {
+      return { ok: false, payload: null, expired: true };
+    }
+    return { ok: false, payload: null, expired: false };
   }
 }
 

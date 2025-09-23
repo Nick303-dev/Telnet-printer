@@ -1,8 +1,8 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const db = require('../db');
-const { authMiddleware, adminOnly } = require('../middleware/auth');
-const { generateRandomPassword, isValidEmail } = require('../utils');
+import express from 'express';
+import bcrypt from 'bcrypt';
+import db from '../db.js';
+import { authMiddleware, adminOnly } from '../middleware/auth.js';
+import { generateRandomPassword, isValidEmail } from '../utils/index.js';
 
 const router = express.Router();
 
@@ -166,4 +166,4 @@ router.post('/users/:id/reset-password', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

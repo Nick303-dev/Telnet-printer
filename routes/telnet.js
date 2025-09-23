@@ -1,7 +1,7 @@
-const express = require('express');
-const { Telnet } = require('telnet-client');
-const { authMiddleware } = require('../middleware/auth');
-const { isValidIP, isValidPort, isLocalIP, buildCmdString } = require('../utils');
+import express from 'express';
+import { Telnet } from 'telnet-client';
+import { authMiddleware } from '../middleware/auth.js';
+import { isValidIP, isValidPort, isLocalIP, buildCmdString } from '../utils/index.js';
 
 const router = express.Router();
 
@@ -100,4 +100,4 @@ router.get('/printer-data', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

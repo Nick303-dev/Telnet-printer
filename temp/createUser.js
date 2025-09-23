@@ -1,6 +1,6 @@
 // Script per creare un utente di test con password hashata
-const bcrypt = require('bcrypt');
-const db = require('../db');
+import bcrypt from 'bcrypt';
+import db from '../db.js';
 
 async function createTestUser() {
   try {

@@ -1,7 +1,8 @@
 // Script per creare un utente e configurare il database
-const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import bcrypt from 'bcrypt';
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+dotenv.config();
 
 async function setupDatabase() {
   let connection;
@@ -24,9 +25,13 @@ async function setupDatabase() {
     console.log('✅ Connesso al database MySQL!');
 
     // Crea la tabella users se non esiste
+    console.log('📝 Eliminazione tabella users esistente (se presente)...');
+    await connection.execute('DROP TABLE IF EXISTS users');
+    console.log('✅ Tabella users eliminata (se presente).');
+
     console.log('📝 Creazione tabella users...');
     const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,

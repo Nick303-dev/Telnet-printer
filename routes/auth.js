@@ -7,9 +7,21 @@ import {
   generateRefreshToken, 
   verifyRefreshToken,
   isValidEmail 
-} from '../utils';
+} from '../utils/index.js';
 
 const router = express.Router();
+
+function parseCookies(header) {
+  if (!header || typeof header !== 'string') return {};
+  return header.split(';').reduce((acc, cookie) => {
+    const index = cookie.indexOf('=');
+    if (index === -1) return acc;
+    const key = cookie.slice(0, index).trim();
+    const value = cookie.slice(index + 1).trim();
+    acc[key] = value;
+    return acc;
+  }, {});
+}
 
 // --- Login ---
 router.post('/login', async (req, res) => {
@@ -48,7 +60,18 @@ router.post('/login', async (req, res) => {
 
     // Genera tokens
     const accessToken = generateAccessToken(user);
-    const refreshToken = rememberMe ? generateRefreshToken(user) : null;
+    const expiresInRefresh = rememberMe ? '30d' : '7d';
+    const refreshToken = generateRefreshToken(user, { expiresIn: expiresInRefresh });
+
+    // Imposta cookie httpOnly per il refresh token (non accessibile al client)
+    const maxAgeMs = (rememberMe ? 30 : 7) * 24 * 60 * 60 * 1000;
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: false, // HTTP, non HTTPS come da richiesta
+      sameSite: 'lax',
+      path: '/',
+      maxAge: maxAgeMs
+    });
     
     console.log(`✅ Login successful for: ${email}`);
     
@@ -69,9 +92,10 @@ router.post('/login', async (req, res) => {
 
 // --- Refresh token ---
 router.post('/refresh', async (req, res) => {
-  const { refreshToken } = req.body;
+  const cookies = parseCookies(req.headers.cookie);
+  const refreshToken = cookies['refresh_token'];
   if (!refreshToken) {
-    return res.status(400).json({ result: 'Missing refresh token' });
+    return res.status(401).json({ result: 'Missing refresh token' });
   }
 
   const decoded = verifyRefreshToken(refreshToken);
@@ -124,8 +148,15 @@ router.get('/verify-token', authMiddleware, (req, res) => {
 
 // --- Logout ---
 router.post('/logout', authMiddleware, (req, res) => {
+  // Rimuovi il refresh token dal cookie
+  res.clearCookie('refresh_token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/'
+  });
   console.log(`User ${req.user.email} logged out`);
   res.json({ result: 'Logout successful' });
 });
 
-module.exports = router;
+export default router;

@@ -19,11 +19,10 @@ let refreshToken = null;
 // --- Funzione per inizializzare i token ---
 function initializeTokens() {
   accessToken = localStorage.getItem('accessToken');
-  refreshToken = localStorage.getItem('refreshToken');
+  // refreshToken viene gestito solo tramite cookie httpOnly
   
   console.log('🔍 Initializing tokens:', {
-    hasAccessToken: !!accessToken,
-    hasRefreshToken: !!refreshToken
+    hasAccessToken: !!accessToken
   });
 }
 
@@ -32,27 +31,6 @@ window.addEventListener('DOMContentLoaded', async function() {
   console.log('🚀 Page loaded, checking authentication...');
   
   initializeTokens();
-  
-  // Prova a ottenere un nuovo access token
-  try {
-    const tokenResponse = await fetch('/api/get-accessToken', {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (tokenResponse.ok) {
-      const tokenData = await tokenResponse.json();
-      console.log('🔑 Token response:', tokenData.result);
-      
-      if (tokenData.accessToken) {
-        accessToken = tokenData.accessToken;
-        localStorage.setItem('accessToken', accessToken);
-      }
-    }
-  } catch (error) {
-    console.log('⚠️ Could not get access token:', error.message);
-  }
   
   if (!accessToken) {
     console.log('❌ No access token found, redirecting to login');
@@ -107,13 +85,13 @@ window.addEventListener('DOMContentLoaded', async function() {
 
 // --- Funzione per refresh del token ---
 async function refreshAccessToken() {
-  console.log('🔄 Attempting to refresh access token...');
+  console.log('🔄 Attempting to refresh access token using httpOnly cookie...');
   
   try {
     const res = await fetch('/api/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
+      credentials: 'include' // Invia automaticamente i cookie httpOnly
     });
 
     if (res.ok) {
@@ -121,58 +99,34 @@ async function refreshAccessToken() {
       if (data.accessToken) {
         accessToken = data.accessToken;
         localStorage.setItem('accessToken', accessToken);
-        console.log('✅ Access token refreshed successfully via cookies');
+        console.log('✅ Access token refreshed successfully via httpOnly refresh cookie');
         return true;
       }
+    } else {
+      console.log('❌ Refresh failed - Status:', res.status);
+      const errorData = await res.json().catch(() => ({ result: 'Unknown error' }));
+      console.log('❌ Refresh error:', errorData.result);
     }
   } catch (error) {
-    console.log('⚠️ Cookie-based refresh failed:', error.message);
+    console.log('⚠️ Refresh request failed:', error.message);
   }
   
-  refreshToken = localStorage.getItem('refreshToken');
+  // Se arriviamo qui, il refresh è fallito
+  console.log('❌ Refresh token expired or invalid, clearing session');
+  localStorage.clear();
   
-  if (!refreshToken) {
-    console.log('❌ No refresh token available');
-    localStorage.clear();
-    await fetch('/del-cookies', { method: 'POST', credentials: 'include' });
-    return false;
-  }
-
+  // Prova a cancellare i cookie tramite logout
   try {
-    const res = await fetch('/api/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-      credentials: 'include'
+    await fetch('/api/logout', { 
+      method: 'POST', 
+      credentials: 'include',
+      headers: { 'Authorization': accessToken ? 'Bearer ' + accessToken : '' }
     });
-
-    if (!res.ok) {
-      throw new Error('Refresh token expired');
-    }
-
-    const data = await res.json();
-    
-    if (data.accessToken) {
-      accessToken = data.accessToken;
-      localStorage.setItem('accessToken', accessToken);
-      
-      if (data.refreshToken) {
-        refreshToken = data.refreshToken;
-        localStorage.setItem('refreshToken', refreshToken);
-      }
-      
-      console.log('✅ Access token refreshed successfully');
-      return true;
-    }
-    
-    throw new Error('No access token in refresh response');
-    
-  } catch (error) {
-    console.log('❌ Failed to refresh token:', error.message);
-    localStorage.clear();
-    await fetch('/del-cookies', { method: 'POST', credentials: 'include' });
-    return false;
+  } catch (err) {
+    console.log('⚠️ Could not logout properly:', err.message);
   }
+  
+  return false;
 }
 
 // --- Funzione per fetch autenticato ---
@@ -229,10 +183,11 @@ function redirectToLogin(message) {
   refreshToken = null;
   currentUser = null;
   
-  fetch('/del-cookies', { 
+  fetch('/api/logout', { 
     method: 'POST', 
-    credentials: 'include' 
-  }).catch(err => console.log('Error clearing cookies:', err.message));
+    credentials: 'include',
+    headers: { 'Authorization': accessToken ? 'Bearer ' + accessToken : '' }
+  }).catch(err => console.log('Error during logout:', err.message));
 
   window.location.href = '/login.html';
 }

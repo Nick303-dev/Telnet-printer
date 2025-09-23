@@ -1,7 +1,7 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const db = require('../db');
-const { authMiddleware } = require('../middleware/auth');
+import express from 'express';
+import bcrypt from 'bcrypt';
+import db from '../db.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -71,4 +71,4 @@ router.post('/change-password', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

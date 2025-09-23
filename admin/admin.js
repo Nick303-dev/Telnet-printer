@@ -219,17 +219,18 @@ async function toggleUserStatus(userId, newStatus) {
         
         const data = await response.json();
         
-        if (!response.ok) {
-            throw new Error(data.result || 'Errore nell\\'aggiornamento utente');
-        }
-        
+ if (!response.ok) {
+    throw new Error(data.result || `Errore nell'aggiornamento utente`);
+}
+
         await loadUsers();
         showAlert(`Utente ${newStatus === 'active' ? 'attivato' : 'disattivato'} con successo!`, 'success');
         
     } catch (error) {
-        console.error('Error updating user status:', error);
-        showAlert('Errore nell\\'aggiornamento: ' + error.message, 'error');
-    }
+    console.error('Error updating user status:', error);
+    showAlert(`Errore nell'aggiornamento: ${error.message}`, 'error');
+}
+
 }
 
 // Toggle user role
@@ -251,16 +252,17 @@ async function toggleUserRole(userId, newRole) {
         
         const data = await response.json();
         
-        if (!response.ok) {
-            throw new Error(data.result || 'Errore nell\\'aggiornamento ruolo');
-        }
+if (!response.ok) {
+    throw new Error(data.result || `Errore nell'aggiornamento ruolo`);
+}
+
         
         await loadUsers();
         showAlert(`Ruolo utente cambiato a ${newRole} con successo!`, 'success');
         
     } catch (error) {
         console.error('Error updating user role:', error);
-        showAlert('Errore nell\\'aggiornamento ruolo: ' + error.message, 'error');
+        showAlert(`Errore nell'aggiornamento ruolo: ${error.message}`, 'error');
     }
 }
 
