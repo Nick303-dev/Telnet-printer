@@ -20,18 +20,18 @@ let refreshToken = null;
 function initializeTokens() {
   accessToken = localStorage.getItem('accessToken');
   // refreshToken viene gestito solo tramite cookie httpOnly
-  
+
   console.log('🔍 Initializing tokens:', {
     hasAccessToken: !!accessToken
   });
 }
 
 // --- Verifica autenticazione all'avvio della pagina ---
-window.addEventListener('DOMContentLoaded', async function() {
+window.addEventListener('DOMContentLoaded', async function () {
   console.log('🚀 Page loaded, checking authentication...');
-  
+
   initializeTokens();
-  
+
   if (!accessToken) {
     console.log('❌ No access token found, redirecting to login');
     redirectToLogin('Devi effettuare il login per accedere a questa pagina');
@@ -51,32 +51,32 @@ window.addEventListener('DOMContentLoaded', async function() {
     });
 
     console.log('Token verification response status:', response.status);
-    
+
     if (!response.ok) {
       console.log('🔄 Token invalid, trying refresh...');
       const refreshSuccess = await refreshAccessToken();
-      
+
       if (!refreshSuccess) {
         throw new Error('Could not refresh token');
       }
-      
+
       return window.location.reload();
     }
 
     const data = await response.json();
-    
+
     if (!data.user || !data.user.email) {
       throw new Error('Invalid token verification response');
     }
-    
+
     console.log('✅ Authentication successful, user:', data.user.email);
-    
+
     currentUser = data.user;
     localStorage.setItem('userRole', data.user.role);
     localStorage.setItem('userEmail', data.user.email);
-    
+
     updateUserInterface();
-    
+
   } catch (error) {
     console.error('❌ Authentication failed:', error.message);
     redirectToLogin('Sessione scaduta. Effettua nuovamente il login.');
@@ -86,7 +86,7 @@ window.addEventListener('DOMContentLoaded', async function() {
 // --- Funzione per refresh del token ---
 async function refreshAccessToken() {
   console.log('🔄 Attempting to refresh access token using httpOnly cookie...');
-  
+
   try {
     const res = await fetch('/api/refresh', {
       method: 'POST',
@@ -110,22 +110,22 @@ async function refreshAccessToken() {
   } catch (error) {
     console.log('⚠️ Refresh request failed:', error.message);
   }
-  
+
   // Se arriviamo qui, il refresh è fallito
   console.log('❌ Refresh token expired or invalid, clearing session');
   localStorage.clear();
-  
+
   // Prova a cancellare i cookie tramite logout
   try {
-    await fetch('/api/logout', { 
-      method: 'POST', 
+    await fetch('/api/logout', {
+      method: 'POST',
       credentials: 'include',
       headers: { 'Authorization': accessToken ? 'Bearer ' + accessToken : '' }
     });
   } catch (err) {
     console.log('⚠️ Could not logout properly:', err.message);
   }
-  
+
   return false;
 }
 
@@ -134,7 +134,7 @@ async function fetchWithAuth(url, options = {}) {
   if (!accessToken) {
     accessToken = localStorage.getItem('accessToken');
   }
-  
+
   if (!accessToken) {
     console.log('❌ No access token available for request');
     redirectToLogin('Sessione scaduta, effettua di nuovo il login');
@@ -151,9 +151,9 @@ async function fetchWithAuth(url, options = {}) {
 
   if (response.status === 401) {
     console.log('🔄 Token expired (401), attempting refresh...');
-    
+
     const refreshed = await refreshAccessToken();
-    
+
     if (!refreshed) {
       redirectToLogin('Sessione scaduta, effettua di nuovo il login');
       throw new Error('Could not refresh token');
@@ -161,7 +161,7 @@ async function fetchWithAuth(url, options = {}) {
 
     options.headers['Authorization'] = 'Bearer ' + accessToken;
     response = await fetch(url, options);
-    
+
     if (response.status === 401) {
       console.log('❌ Still 401 after refresh, redirecting to login');
       redirectToLogin('Sessione scaduta, effettua di nuovo il login');
@@ -173,18 +173,18 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 // --- Funzione helper per redirect sicuro al login ---
-function redirectToLogin(message) {  
+function redirectToLogin(message) {
   if (message) {
     alert(message);
   }
-  
+
   localStorage.clear();
   accessToken = null;
   refreshToken = null;
   currentUser = null;
-  
-  fetch('/api/logout', { 
-    method: 'POST', 
+
+  fetch('/api/logout', {
+    method: 'POST',
     credentials: 'include',
     headers: { 'Authorization': accessToken ? 'Bearer ' + accessToken : '' }
   }).catch(err => console.log('Error during logout:', err.message));
@@ -195,17 +195,17 @@ function redirectToLogin(message) {
 // --- Update user interface based on current user ---
 function updateUserInterface() {
   if (!currentUser) return;
-  
+
   const userInfo = document.getElementById('userInfo');
   if (userInfo) {
     const roleIcon = currentUser.role === 'admin' ? '👑' : '👤';
     userInfo.textContent = `${roleIcon} ${currentUser.email}`;
   }
-  
+
   if (adminBtn) {
     adminBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
   }
-  
+
   console.log('✅ UI updated for user:', currentUser.email, 'Role:', currentUser.role);
 }
 
@@ -213,7 +213,7 @@ function updateUserInterface() {
 function logout() {
   if (confirm('Sei sicuro di voler effettuare il logout?')) {
     console.log('👋 User logging out...');
-    
+
     fetch('/api/logout', {
       method: 'POST',
       credentials: 'include',
@@ -222,7 +222,7 @@ function logout() {
         'Content-Type': 'application/json'
       }
     }).catch(err => console.log('Logout API call failed:', err.message));
-    
+
     redirectToLogin();
   }
 }
@@ -236,20 +236,20 @@ let valueDisplay = null;
 // --- Funzioni di utilità ---
 function appendLog(...msgs) {
   const now = new Date();
-  const timestamp = now.toLocaleTimeString('it-IT', { 
+  const timestamp = now.toLocaleTimeString('it-IT', {
     hour12: false,
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
   });
-  
+
   const logMessage = `[${timestamp}] ${msgs.join(' ')}\n`;
-  
+
   if (logEl) {
     logEl.append(document.createTextNode(logMessage));
     logEl.scrollTop = logEl.scrollHeight;
   }
-  
+
   console.log(logMessage.trim());
 }
 
@@ -259,7 +259,7 @@ function popolaCodeTypeSelect(data) {
   defaultOption.value = '';
   defaultOption.text = 'Seleziona tipo di codice';
   codeTypeSelect.appendChild(defaultOption);
-  
+
   data.forEach(item => {
     const option = document.createElement('option');
     option.value = item.command;
@@ -326,17 +326,17 @@ codeTypeSelect.addEventListener('change', () => {
       if (p.max !== undefined) el.max = p.max;
       if (p.rangemin !== undefined) el.min = p.rangemin;
       if (p.rangemax !== undefined) el.max = p.rangemax;
-      
+
       if (p.type === 'range') {
         el.value = p.rangemin || 0;
-        
+
         const valueDisplay = document.createElement('span');
         valueDisplay.textContent = el.value;
         valueDisplay.style.marginLeft = '10px';
         el.addEventListener('input', () => {
           valueDisplay.textContent = el.value;
         });
-        
+
         const label = document.createElement('label');
         label.textContent = p.description || p.name;
         label.htmlFor = p.position;
@@ -399,7 +399,7 @@ function popolaCustomOptions(selected2DValue, optionsList) {
       if (c.type === 'select') {
         el = document.createElement('select');
         el.id = `${p.position}_${c.for}`;
-        
+
         if (c.values && Array.isArray(c.values)) {
           c.values.forEach(v => {
             const option = document.createElement('option');
@@ -484,7 +484,7 @@ clearBtn.addEventListener('click', () => logEl.innerHTML = '');
 // Send button
 sendBtn.addEventListener('click', async () => {
   console.log('🚀 Send button clicked');
-  
+
   const codeType = codeTypeSelect.value;
   const options = leggiValoriInput();
   const text = textInput.value.trim();
@@ -494,15 +494,15 @@ sendBtn.addEventListener('click', async () => {
   if (!codeType) {
     return appendLog('❌ Seleziona un tipo di codice.');
   }
-  
+
   if (!text) {
     return appendLog('❌ Inserisci il testo da stampare.');
   }
-  
+
   if (!ip) {
     return appendLog('❌ Inserisci l\'IP della stampante.');
   }
-  
+
   if (!port || isNaN(port) || port < 1 || port > 65535) {
     return appendLog('❌ Inserisci una porta valida (1-65535).');
   }
@@ -515,10 +515,10 @@ sendBtn.addEventListener('click', async () => {
     }
 
     const commandData = { codeType, options, text, ip, port };
-    
-    const values = flattenValues(commandData); 
+
+    const values = flattenValues(commandData);
     const filteredValues = values.slice(0, -2);
-    
+
     let logStr = '';
     if (filteredValues.length > 1) {
       logStr = `${filteredValues[0]}${filteredValues[1]}`;
@@ -531,10 +531,10 @@ sendBtn.addEventListener('click', async () => {
     }
 
     console.log('📝 Command string:', logStr);
-    
-    const response = await fetchWithAuth('/api/send-command', {
+
+    const response = await fetchWithAuth('/printer/send-command', {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(commandData)
@@ -544,7 +544,7 @@ sendBtn.addEventListener('click', async () => {
 
     if (!response.ok) {
       let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      
+
       try {
         const errorData = await response.json();
         if (errorData.result) {
@@ -553,31 +553,31 @@ sendBtn.addEventListener('click', async () => {
       } catch (parseError) {
         console.log('Could not parse error response');
       }
-      
+
       throw new Error(errorMessage);
     }
 
     const data = await response.json();
-    
+
     if (data.result) {
       appendLog('✅ Risposta:', data.result);
-      
+
       if (data.response && data.response !== 'No response from device') {
         appendLog('📋 Risposta dispositivo:', data.response);
       }
-      
+
       if (data.duration) {
         appendLog('⏱️ Tempo di esecuzione:', data.duration);
       }
     } else {
       appendLog('⚠️ Comando inviato ma nessuna conferma ricevuta');
     }
-    
+
   } catch (err) {
     console.error('❌ Send command error:', err.message);
-    
+
     let userMessage = err.message;
-    
+
     if (err.message.includes('NetworkError') || err.message.includes('Failed to fetch')) {
       userMessage = 'Errore di rete. Controlla la connessione internet.';
     } else if (err.message.includes('timeout')) {
@@ -591,25 +591,25 @@ sendBtn.addEventListener('click', async () => {
     } else if (err.message.includes('500') || err.message.includes('Internal Server Error')) {
       userMessage = 'Errore interno del server. Riprova più tardi.';
     }
-    
+
     appendLog('❌ Errore durante invio comando:', userMessage);
   }
 });
 
 // --- Event listeners per menu buttons ---
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', logout);
   }
-  
+
   const profileBtn = document.getElementById('profileBtn');
   if (profileBtn) {
     profileBtn.addEventListener('click', () => {
-      window.location.href = "../../profile.html";
+      window.location.href = "/profile/profile.html";
     });
   }
-  
+
   const adminPanelBtn = document.getElementById('adminPanelBtn');
   if (adminPanelBtn) {
     adminPanelBtn.addEventListener('click', () => {

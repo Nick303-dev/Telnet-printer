@@ -29,14 +29,19 @@ app.use(express.static(path.join(__dirname, 'login/frontend')));
 // --- API routes (must come before static files to avoid conflicts) ---
 app.use('/', routes);
 
+
 // --- Protected static files (require authentication for ALL files) ---
 app.use('/printer', authMiddleware, express.static(path.join(__dirname, 'printer')));
 app.use('/admin', authMiddleware, express.static(path.join(__dirname, 'admin')));
 app.use('/public', authMiddleware, express.static(path.join(__dirname, 'public')));
 app.use('/protected', authMiddleware, express.static(path.join(__dirname, 'protected')));
-
+app.use('/profile', authMiddleware, express.static(path.join(__dirname, 'profile')));
 // --- Root redirect ---
 app.get('/', (req, res) => res.redirect('/login.html'));
+app.get(/.*/, (req, res) => {
+  alert('inserisci una route valida! Verrai reindirizzato alla pagina di login.');
+  res.redirect('http://localhost:3001/login.html');
+});
 
 // --- Avvio server ---
 const PORT = process.env.PORT || 3001;
