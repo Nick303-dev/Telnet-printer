@@ -39,7 +39,6 @@ app.use('/profile', authMiddleware, express.static(path.join(__dirname, 'profile
 // --- Root redirect ---
 app.get('/', (req, res) => res.redirect('/login.html'));
 app.get(/.*/, (req, res) => {
-  alert('inserisci una route valida! Verrai reindirizzato alla pagina di login.');
   res.redirect('http://localhost:3001/login.html');
 });
 
